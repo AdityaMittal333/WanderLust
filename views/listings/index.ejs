@@ -112,15 +112,27 @@
 
 
 <script>
-  let taxSwitch=document.getElementById("flexSwitchCheckDefault");
-  taxSwitch.addEventListener("click",()=>{
-    let taxInfo=document.getElementsByClassName("tax-info");
-    for(info of taxInfo){
-      if(info.style.display!="inline"){
-        info.style.display="inline";
-      }
-      else info.style.display="none"
+  let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+
+  // Store original prices to toggle back and forth
+  document.querySelectorAll(".card-text").forEach((element) => {
+    let priceText = element.innerText.match(/₹\s*([\d,]+)/);
+    if (priceText) {
+      let originalPrice = parseInt(priceText[1].replace(/,/g, ""));
+      element.setAttribute("data-original-price", originalPrice); // Store original price in a data attribute
     }
   });
 
+  taxSwitch.addEventListener("click", () => {
+    document.querySelectorAll(".card-text").forEach((element) => {
+      let originalPrice = parseInt(element.getAttribute("data-original-price"));
+      let taxPrice = Math.round(originalPrice * 1.18);
+
+      if (taxSwitch.checked) {
+        element.innerHTML = element.innerHTML.replace(originalPrice.toLocaleString("en-IN"), taxPrice.toLocaleString("en-IN"));
+      } else {
+        element.innerHTML = element.innerHTML.replace(taxPrice.toLocaleString("en-IN"), originalPrice.toLocaleString("en-IN"));
+      }
+    });
+  });
 </script>
